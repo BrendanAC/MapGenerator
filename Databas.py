@@ -3,33 +3,22 @@ import sys
 import os
 from contextlib import closing
 
+conn=sqlite3.connect('Maps.db')
+c=conn.cursor()
 
+def create_table():
+    c.execute('CREATE TABLE IF NOT EXISTS Mapdata( Id INTEGER, Map TEXT )')
 
-class DB:
+def data_entry(key, map):
+    c.execute("INSERT INTO Mapdata (Id, Map) VALUES (?, ?) ",
+              (key, map))
+    conn.commit()
 
-
-    def __init__(self):
-        self.conn=None
-        self.conn=self.connect()
-
-
-
-
-    def connect(self):
-        if not self.conn:
-            if sys.platform == "win32":
-                DB_FILE = "C:\\Users\\wishbone561\\Downloads\\Program\\MapGenerator\\Maps.sqlite"
-            else:
-                HOME = os.environ["HOME"]
-                DB_FILE = HOME + "C:\\Users\\wishbone561\\Downloads\\Program\\MapGenerator\\Maps.sqlite"
-
-            conn = sqlite3.connect(DB_FILE)
-            conn.row_factory = sqlite3.Row
-
-        return self.conn
-
-    def add_map(map):
-        sql='''INSERT'''
-    def close(self):
-        if self.conn:
-            self.conn.close()
+def close():
+    if conn:
+        conn.close()
+        c.close()
+def rowCount():
+    c.execute("SELECT COUNT (*) FROM Mapdata")
+    rowcount = c.fetchone()[0]
+    return rowcount
