@@ -1,7 +1,4 @@
 import sqlite3
-import sys
-import os
-from contextlib import closing
 
 conn=sqlite3.connect('Maps.db')
 c=conn.cursor()
