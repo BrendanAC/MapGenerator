@@ -1,7 +1,8 @@
 import random
 import Databas as DB
 import timeit
-#import Ra as RC
+from time import sleep
+import Ra as RC
 # import os.path
 
 class Map:
@@ -47,50 +48,64 @@ class Map:
     def Clear(self):
         RBin=self.GetCurrentVal()
         self.AddToMap(RBin)
-
     def CreateDB(self):
+        start = timeit.timeit()
+        print("Creating Database")
+        DB.create_table()
+        max=self.MaxBinVal()
+        section=max/4
+        for j in range(0,5):
+            thread=Thread(target=self.CreateDBEntry(),args=(j*section,((j*section)+section)))
+            thread.start()
+
+
+        print("DataBase Complete")
+        end = timeit.timeit()
+        print("Total Time taken:")
+        print(end - start)
+    def CreateDBEntry(self,i,max):
         # if(os.path.isfile("Maps.db")):
         #     print("File is already create are you sure you want to do this (Y/N)")
         #     user=input().capitalize()
         #     if(user=="N"):
         #         print("Creating Database is cancelled.")
         #         return
-        start = timeit.timeit()
-        print("Creating Database")
-        DB.create_table()
 
-        for i in range(self.MaxBinVal()):
-            sNum = self.DecToFormatVal(i)
-            self.AddCurrentVal(sNum)
-            self.AddToMap(sNum)
-            self.ToGraph()
-            PathLength=0
-            #print("path to the start and goal of program")
-            mapstart=timeit.timeit()
-            print("Working on map "+str(i))
-            for q in range(0,3):
-                for j in range(0,5):
-                    goal=str(q)+str(j)
-                    listPath=list(self.bfs_paths(self.MapGraph, '00', goal))
-                    PathofCurrentList=self.findLongestPath(listPath)
-                    #print(PathofCurrentList)
-                    if(PathofCurrentList>PathLength):
-                        PathLength=PathofCurrentList
-                print(PathLength)
-                if (PathLength > 6):
-                    print(i, " has PASSED with a length of " , PathLength)
-                    DB.data_entry(j, sNum)
-                     #print("Added "+str(i)+"to the data base")
-               # else:
-               #     print(i, " has FAILED")
-                mapend = timeit.timeit()
-                maptime = mapend - mapstart
-                print( "Time to complete map "+str(i)+" : "+str(maptime))
+        sNum = self.DecToFormatVal(i)
+        self.AddCurrentVal(sNum)
+        self.AddToMap(sNum)
+        self.ToGraph()
+        PathLength=0
+        #print("path to the start and goal of program")
+        mapstart=timeit.timeit()
+        print("Working on map "+str(i))
+        for q in range(0,3):
+            if PathLength > 6:
+                break;
+            for j in range(0,5):
+                if PathLength > 6:
+                    break;
+                goal=str(q)+str(j)
+                listPath=list(self.bfs_paths(self.MapGraph, '00', goal))
+                PathofCurrentList=self.findLongestPath(listPath)
+                #print(PathofCurrentList)
+                if(PathofCurrentList>PathLength):
+                    PathLength=PathofCurrentList
+
+            #print(PathLength)
+            # else:
+           #     print(i, " has FAILED")
+            mapend = timeit.timeit()
+            maptime = mapend - mapstart
+            #print( "Time to complete map "+str(i)+" : "+str(maptime))
+        if (PathLength > 6):
+            #print(i, " has PASSED with a length of ", PathLength)
+            DB.data_entry(j, sNum)
+            # print("Added "+str(i)+"to the data base")
 
         print("DataBase Complete")
-        end = timeit.timeit()
-        print("Total Time taken:")
-        print(end - start)
+
+
 
     def DecToFormatVal(self, val):
         # formating will tend to the needs of the size so for 3x3 there will be 9 digits and 5x5 25 digits.
@@ -126,11 +141,8 @@ class Map:
         return int(sVal, 2)
 
     def ToGraph(self):
-        global AlphaTrack
-        AlphaTrack=0
         for i in range(0,self.ysize):
             for j in range(0,self.xsize):
-                singleEdge=""
                 edges = []
                 Current=str(i)+str(j)
 
@@ -174,7 +186,32 @@ class Map:
     def test(self):
         self.MaxBinVal()
 
-    #def MapDemo(self):
-     #   Demo1=ServoControl(11)
-     #   Demo2=ServoControl(13)
-     #   Demo3=ServoControl(15)
+    def getRox(self):
+        print(DB.rowCount())
+
+    def NumberToEnglishConverter(self,map):
+        NewMap=[]
+        for i in range(0,self.ysize):
+            for j in range(0, self.xsize):
+                if map[i][j]=="0":
+                    NewMap[i][j]="Path"
+                elif map[i][j]=="1":
+                    NewMap[i][j]=="Wall"
+                elif map[i][j]=="2":
+                    NewMap[i][j]=="Path"
+                elif map[i][j]=="3":
+                    NewMap[i][j]=="Challenge"
+                elif map[i][j]=="4":
+                    NewMap[i][j]=="Other"
+                else:
+                    print ("Error")
+        print(NewMap)
+
+
+
+
+
+    def MapDemo(self):
+        Servo1=ccServoControl(11)
+        Servo3=ServoControl(13)
+        Servo2=ServoControl(15)
