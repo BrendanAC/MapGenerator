@@ -1,7 +1,8 @@
 import random
+import Led as L
+#import Ra
 
 class Event:
-
 
     def __init__(self,map,MaxX=6,MaxY=4):
         self.CMap=map
@@ -46,8 +47,8 @@ class Event:
     def LargestIntersection(self, val):
     #This simply finds the largest amount of times that a place
         Intersection = 0
-        for i in range(0, self.CMaxX):
-            for j in range(0, self.CMaxY):
+        for i in range(0, self.CMaxY):
+            for j in range(0, self.CMaxX):
                 if val[i][j] > Intersection:
                     Intersection = val[i][j]
         return Intersection
@@ -59,8 +60,8 @@ class Event:
 
         Coordinates = []
         while(len(Coordinates)<6):
-            for i in range(0, self.CMaxX):
-                for j in range(0, self.CMaxY):
+            for i in range(0, self.CMaxY):
+                for j in range(0, self.CMaxX):
                     if val[i][j] == IntersectionValue:
                         coord = (i, j);
                         Coordinates.append(coord)
@@ -68,47 +69,115 @@ class Event:
         return Coordinates
 
     def SelectCoordinates(self,Coordinates):
+        NCoordinates = []
+        NCoordinates.append(Coordinates[len(Coordinates) - 1])
         random.shuffle(Coordinates)
         print(Coordinates)
-        NCoordinates=[]
-        for i in range(0,4):
+        for i in range(1,4):
             NCoordinates.append(Coordinates[i])
+
         for q in range(4,len(Coordinates)):
             if Coordinates[q][0]==self.CMaxX-1:
                 NCoordinates.append(Coordinates[q])
                 break
 
+
         return NCoordinates
-    def AddEvents(self,map):
+    # def AddEvents(self,map):
+    #     for i in range(0,self.CMaxY):
+    #         for j in range(0,self.CMaxX):
+    #             if(self.Cx!=-1 and self.Cy!=-1):
+    #                 map[self.Cy][self.Cy]=self.led
+    #                 break
+    #     return map
+    def PopulateMap(self,NCoordinates):
+
+        self.CMap[0][0]='2'
+        self.CMap[NCoordinates[0][0]][NCoordinates[0][0]]='4'
+        for i in range(1,len(NCoordinates)):
+            self.CMap[NCoordinates[i][0]][NCoordinates[i][1]]='3'
+
+        self.DMap=[[0] * self.CMaxX for i in range(self.CMaxY)]
         for i in range(0,self.CMaxY):
             for j in range(0,self.CMaxX):
-                if(self.Cx!=-1 and self.Cy!=-1):
-                    map[self.Cy][self.Cy]=self.led
-                    break
-        return map
+                if(self.CMap[i][j]=='0'):
+                    self.DMap[i][j]=Path(i,j)
+                elif(self.CMap[i][j]=='1'):
+                    self.DMap[i][j]=Wall(i,j)
+                elif(self.CMap[i][j]=='2'):
+                    self.DMap[i][j]==Player(i,j)
+                elif(self.CMap[i][j]=='3'):
+                    self.DMap[i][j] = Challenge(i,j)
+                elif (self.CMap[i][j] == '4'):
+                    self.DMap[i][j] = Loot(i,j)
+                else:
+                    print("ERROR VALUE NOT FOUND")
+        print(self.DMap)
 
+    def FindLocation(self):
+        ret=[self.Cx,self.Cy]
+        return ret
+    def TurnOn(self,color):
+        ledVal=6*self.Cy
+        ledVal+=1*self.Cx
+        L.send(ledVal,color)
 
+class Loot(Event):
 
-
-
+    def __init__(self,i,j):
+       # super.__init__()
+        self.Cx=i
+        self.Cy=j
+        self.led=4
+        self.TurnOn(self.led)
 
 
 
 class Challenge(Event):
 
-    def __init__(self):
-        super.__init__()
+    def __init__(self,i,j):
+       # super.__init__()
+        self.Cx=i
+        self.Cy=j
         self.led=3
+        self.TurnOn(self.led)
 
-    def FindLocation(self):
+class Wall(Event):
+    def __init__(self,i,j):
+       # super.__init__()
+        #ServoCont=Ra.ServoControl()
+        self.Cx=i
+        self.Cy=j
+        self.led=0
+       # ServoCont.lift(self.Cx,self.Cy,1)
+        self.TurnOn(self.led)
+class Path(Event):
+    def __init__(self,i,j):
+       # super.__init__()
+        self.Cx=i
+        self.Cy=j
+        self.led=0
+
+       # ServoCont = Ra.ServoControl()
+
+       # ServoCont.lift(self.Cx, self.Cy,0)
+        self.TurnOn(self.led)
+
+class Player(Event):
+    def __init__(self,i,j):
+       # super.__init__()
+        self.Cx=i
+        self.Cy=j
+        self.led=2
+        self.TurnOn(self.led)
 
 
 
 
 
-    # def main():
+        # def main():
     #     CMap = [["0" for i in range(4)] for j in range(4)]
-    #     val = [[0 for i in range(4)] for j in range(4)]
+    #    val = [[0 for i in range(4)] for j in range(4)]
     #     CMap[0][3] = "1"
     #     CMap[3][3] = "1"
     #     for q in range(0, len(CMap[0])):
@@ -122,4 +191,4 @@ class Challenge(Event):
     #         val = CommonPath(CMap, val, 0, i)
     #     Coordinates=CoordinateOfLargestIntersections(val, LargestIntersection(val))
     #     print(Coordinates)
-    #     print(val)
+        #     print(val)

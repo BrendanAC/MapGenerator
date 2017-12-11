@@ -1,4 +1,5 @@
 from MapObject import Map
+from Event import Event
 import sys
 
 def Menu():
@@ -7,17 +8,25 @@ def Menu():
     print("Enter 3 to Demo map")
     print("Enter 0 to exit program")
 
-def gateKeeper(Localmap,user):
+def gateKeeper(InitMap,user):
     if(user==str(0)):
         sys.exit()
     if (user==str(1)):
-        Localmap.CreateDB()
+        InitMap.CreateDB()
         return
     if(user==str(2)):
-        Localmap.RandMap()
+        InitMap.RandMap()
+        DMap=Event(InitMap.map)
+        val = [[0 for i in range(6)] for j in range(4)]
+        for i in range(0, InitMap.ysize):
+         val = DMap.CommonPath( val, 0, i)
+        Coordinates = DMap.CoordinateOfLargestIntersections(val, DMap.LargestIntersection(val))
+        Coordinates=DMap.SelectCoordinates(Coordinates)
+        DMap.PopulateMap(Coordinates)
+
         return
     if(user==str(3)):
-        Localmap.test()
+        InitMap.test()
         return
     else:
         print("Invalid input please try again.")
@@ -25,12 +34,12 @@ def gateKeeper(Localmap,user):
 
 def main():
     print("Welcome to Map Generator v 1.0")
-    Localmap=Map()
+    InitMap=Map()
     user=-1
     while(user!=0):
         Menu()
         user=input()
-        gateKeeper(Localmap,user)
+        gateKeeper(InitMap,user)
 
 if __name__ == "__main__":
     main()

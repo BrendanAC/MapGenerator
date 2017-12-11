@@ -2,7 +2,7 @@ import random
 import Databas as DB
 import timeit
 from time import sleep
-import Ra as RC
+#import Ra as RC
 # import os.path
 
 class Map:
@@ -53,10 +53,12 @@ class Map:
         print("Creating Database")
         DB.create_table()
         max=self.MaxBinVal()
-        section=max/4
-        for j in range(0,5):
-            thread=Thread(target=self.CreateDBEntry(),args=(j*section,((j*section)+section)))
-            thread.start()
+
+        for j in range(0,max):
+            # thread=Thread(target=self.CreateDBEntry(),args=(j*section,((j*section)+section)))
+            # thread.start()
+            self.CreateDBEntry(j,max)
+
 
 
         print("DataBase Complete")
@@ -78,32 +80,46 @@ class Map:
         PathLength=0
         #print("path to the start and goal of program")
         mapstart=timeit.timeit()
-        print("Working on map "+str(i))
+        #print("Working on map "+str(i))
         for q in range(0,3):
-            if PathLength > 6:
-                break;
-            for j in range(0,5):
+            if self.map[q][0]==1:
+                continue
+            else:
                 if PathLength > 6:
                     break;
-                goal=str(q)+str(j)
-                listPath=list(self.bfs_paths(self.MapGraph, '00', goal))
-                PathofCurrentList=self.findLongestPath(listPath)
-                #print(PathofCurrentList)
-                if(PathofCurrentList>PathLength):
-                    PathLength=PathofCurrentList
+                for j in range(0,5):
+                    if PathLength > 6:
+                        break;
+                    goal=str(q)+str(5)
+                    start=str(q)+"0"
+                    listPath=list(self.bfs_paths(self.MapGraph, start, goal))
+                    PathofCurrentListIndex=self.findLongestPath(listPath)
+                    PathofCurrentList=listPath[PathofCurrentListIndex]
+                    startPosition=int(PathofCurrentList[0])*6
 
-            #print(PathLength)
-            # else:
-           #     print(i, " has FAILED")
-            mapend = timeit.timeit()
-            maptime = mapend - mapstart
-            #print( "Time to complete map "+str(i)+" : "+str(maptime))
-        if (PathLength > 6):
-            #print(i, " has PASSED with a length of ", PathLength)
-            DB.data_entry(j, sNum)
+
+
+
+                    #print(PathofCurrentList)
+                    if(len(PathofCurrentList)>PathLength):
+                        PathLength=len(PathofCurrentList)
+                        NsNum=sNum[:startPosition]+"2"+sNum[startPosition+1:]
+
+                #print(PathLength)
+
+                mapend = timeit.timeit()
+                maptime = mapend - mapstart
+                #print( "Time to complete map "+str(i)+" : "+str(maptime))
+                if (PathLength > 6):
+                    #print(i, " has PASSED with a length of ", PathLength)
+                    DB.data_entry(i, NsNum)
+                else:
+                    print(i, " has FAILED")
+            if q+2<4:
+                q=q+1
             # print("Added "+str(i)+"to the data base")
 
-        print("DataBase Complete")
+        #print("DataBase Complete")
 
 
 
