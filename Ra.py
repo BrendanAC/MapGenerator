@@ -4,7 +4,10 @@ class ServoControl:
     GPIO.setmode(GPIO.BOARD)
 
     def lift(self,power, ground,floor):
+<<<<<<< HEAD
         print("raising  ",ground ," ",power)
+=======
+>>>>>>> eef7671f2294886f504c85595229ddf183de448a
         lp = self.ListOfPower()
         if (ground == 0):
             GPIO.output(35, GPIO.HIGH)
@@ -62,11 +65,23 @@ class ServoControl:
         p = GPIO.PWM(37, 50)
         lp.append(p)
         lp[2].start(7.5)
+<<<<<<< HEAD
 
         p = GPIO.PWM(36, 50)
         lp.append(p)
         lp[3].start(7.5)
         return lp
 
+=======
+>>>>>>> eef7671f2294886f504c85595229ddf183de448a
 
+        p = GPIO.PWM(36, 50)
+        lp.append(p)
+        lp[3].start(7.5)
+        return lp
 
+# def main():
+#     SC=ServoControl()
+#     SC.lift(0,0,1)
+# if __name__ == "__main__":
+#     main()

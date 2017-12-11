@@ -17,6 +17,7 @@ def gateKeeper(InitMap,user):
     if(user==str(2)):
         InitMap.RandMap()
         DMap=Event(InitMap.map)
+<<<<<<< HEAD
         val = [[0 for i in range(6)] for j in range(4)]
         for i in range(0, InitMap.ysize):
          val = DMap.CommonPath( val, 0, i)
@@ -24,6 +25,10 @@ def gateKeeper(InitMap,user):
         Coordinates=DMap.SelectCoordinates(Coordinates)
         DMap.PopulateMap(Coordinates)
 
+=======
+        Coordinates=DMap.SelectCoordinates()
+        DMap.PopulateMap(Coordinates)
+>>>>>>> eef7671f2294886f504c85595229ddf183de448a
         return
     if(user==str(3)):
         InitMap.test()
